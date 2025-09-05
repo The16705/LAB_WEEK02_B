@@ -1,5 +1,7 @@
 package com.example.lab_week02_b
 
+import android.app.Activity
+import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.widget.TextView
@@ -13,13 +15,10 @@ class ResultActivity : AppCompatActivity() {
         setContentView(R.layout.activity_result)
 
         val colorCode = intent.getStringExtra(MainActivity.COLOR_KEY)
+        val backgroundScreen = findViewById<ConstraintLayout>(R.id.background_screen)
+        val resultMessage = findViewById<TextView>(R.id.color_code_result_message)
 
         if (!colorCode.isNullOrEmpty()) {
-            val backgroundScreen =
-                findViewById<ConstraintLayout>(R.id.background_screen)
-            val resultMessage =
-                findViewById<TextView>(R.id.color_code_result_message)
-
             try {
                 backgroundScreen.setBackgroundColor(Color.parseColor("#$colorCode"))
 
@@ -27,9 +26,18 @@ class ResultActivity : AppCompatActivity() {
                     R.string.color_code_result_message,
                     colorCode.uppercase()
                 )
-            } catch (e: IllegalArgumentException) {
-                resultMessage.text = getString(R.string.color_code_input_invalid)
-                backgroundScreen.setBackgroundColor(Color.DKGRAY)
+
+                val returnIntent = Intent().apply {
+                    putExtra(MainActivity.COLOR_KEY, colorCode.uppercase())
+                    putExtra(MainActivity.ERROR_KEY, false)
+                }
+                setResult(Activity.RESULT_OK, returnIntent)
+
+            } catch (ex: IllegalArgumentException) {
+                val errorIntent = Intent().apply {
+                    putExtra(MainActivity.ERROR_KEY, true)
+                }
+                setResult(Activity.RESULT_OK, errorIntent)
             }
         }
     }
