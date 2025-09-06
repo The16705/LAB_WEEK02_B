@@ -4,9 +4,11 @@ import android.app.Activity
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
+import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
+
 
 class ResultActivity : AppCompatActivity() {
 
@@ -17,6 +19,9 @@ class ResultActivity : AppCompatActivity() {
         val colorCode = intent.getStringExtra(MainActivity.COLOR_KEY)
         val backgroundScreen = findViewById<ConstraintLayout>(R.id.background_screen)
         val resultMessage = findViewById<TextView>(R.id.color_code_result_message)
+        val backButton = findViewById<Button>(R.id.back_button)
+
+        val returnIntent = Intent()
 
         if (!colorCode.isNullOrEmpty()) {
             try {
@@ -27,18 +32,21 @@ class ResultActivity : AppCompatActivity() {
                     colorCode.uppercase()
                 )
 
-                val returnIntent = Intent().apply {
-                    putExtra(MainActivity.COLOR_KEY, colorCode.uppercase())
-                    putExtra(MainActivity.ERROR_KEY, false)
-                }
-                setResult(Activity.RESULT_OK, returnIntent)
+                returnIntent.putExtra(MainActivity.COLOR_KEY, colorCode.uppercase())
+                returnIntent.putExtra(MainActivity.ERROR_KEY, false)
 
             } catch (ex: IllegalArgumentException) {
-                val errorIntent = Intent().apply {
-                    putExtra(MainActivity.ERROR_KEY, true)
-                }
-                setResult(Activity.RESULT_OK, errorIntent)
+                returnIntent.putExtra(MainActivity.ERROR_KEY, true)
             }
+        } else {
+            returnIntent.putExtra(MainActivity.ERROR_KEY, true)
+        }
+
+        setResult(Activity.RESULT_OK, returnIntent)
+
+        backButton.setOnClickListener {
+            finish()
         }
     }
+
 }
